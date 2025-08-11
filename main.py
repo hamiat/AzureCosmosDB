@@ -43,7 +43,43 @@ def Queries(container):
 
     #container.create_item(body=product)
 
+def Manual_Product_Input():
+    products = []
+
+    while True:
+        name = input("Product name: ").strip()
+        if name.lower() == 'x':
+            break
+
+        category = input("Category: ").strip()
+
+        try:
+            price = float(input("Price: "))
+        except ValueError:
+            print("Price has to be a number.")
+            continue
+
+        product = {
+            "name" : name,
+            "category" : category,
+            "price" : price
+        }
+
+        products.append(product)
+
+    return product
+
 def Main():
+
+    while True:
+        question = input("Create new product? y/n: ").strip()
+        if question.lower == "n":
+            break
+        else:
+            Manual_Product_Input()
+            continue
+
+
     products_container = Fetch_Products()
     Queries(products_container)
 
