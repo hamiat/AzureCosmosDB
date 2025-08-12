@@ -2,7 +2,7 @@ import requests
 from azure.cosmos import CosmosClient, exceptions
 from config import config
 
-def Fetch_Products():
+def fetch_products():
 
     con = config()
 
@@ -25,64 +25,55 @@ def Fetch_Products():
     return container
 
 
-def Queries(container):
+def queries(container):
 
-    # Query average price
-    query = "SELECT VALUE AVG(c.price) FROM c"
+    query = "SELECT * FROM c"
     items = list(container.query_items(query=query, enable_cross_partition_query=True))
-    avg_price = items[0] 
-    print(f"Average price: {avg_price}")
+    print(items)
 
-    # Add a product to my database
-    product = {
-        "id" : "1001",
-        "name" : "Rick and Morty: Vol 1",
-        "category" : "Books",
-        "price" : 39.99
-    }
+def manual_product_input():
 
-    #container.create_item(body=product)
-
-def Manual_Product_Input():
     products = []
 
     while True:
-        name = input("Product name: ").strip()
-        if name.lower() == 'x':
+        name = input("Type x to exit\nProduct name:  " ).strip()
+        if name == "x":
             break
+        else:
+            category = input("Category: ").strip()
 
-        category = input("Category: ").strip()
+            while True:
+                try:
+                    price = float(input("Price: "))
+                    if price < 0:
+                        print("Price has to be more than 0")
+                    else:
+                        break
+                except ValueError:
+                    print("Price has to be a number.")
 
-        try:
-            price = float(input("Price: "))
-        except ValueError:
-            print("Price has to be a number.")
-            continue
+            product = {
+                "name" : name,
+                "category" : category,
+                "price" : price
+            }
 
-        product = {
-            "name" : name,
-            "category" : category,
-            "price" : price
-        }
+            products.append(product)
 
-        products.append(product)
+    print(products)
 
-    return product
+    return products
 
 def Main():
 
-    while True:
-        question = input("Create new product? y/n: ").strip()
-        if question.lower == "n":
-            break
-        else:
-            Manual_Product_Input()
-            continue
+    question = input("Create new product? y/n: ")
+    if question.lower() == "y":
+        manual_product_input()
 
-
-    products_container = Fetch_Products()
-    Queries(products_container)
+    #products_container = fetch_products()
+    #queries(products_container)
 
 
 if __name__ == "__main__":
+
     Main()
